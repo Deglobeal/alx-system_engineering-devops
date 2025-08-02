@@ -1,13 +1,2 @@
 #!/bin/bash
-# Split PATH by ':' and count non-empty entries
-
-IFS=':' read -ra dirs <<< "$PATH"    # split PATH into array
-count=0
-for dir in "${dirs[@]}"; do
-    if [ -n "$dir" ]; then
-        count=$((count + 1))
-    fi
-done
-
-echo "$count"
-
+echo "$PATH" | tr ':' '\n' | grep -cve '^$'
