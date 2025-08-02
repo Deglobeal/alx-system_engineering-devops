@@ -1,12 +1,2 @@
 #!/bin/bash
-for a in {a..z}
-do
-  for b in {a..z}
-  do
-    if [[ $a$b == oo ]]
-    then
-      continue
-    fi
-    echo $a$b
-  done
-done
+for a in {a..z}; do for b in {a..z}; do if [[ $a$b == oo ]]; then continue; fi; echo $a$b; done; done
