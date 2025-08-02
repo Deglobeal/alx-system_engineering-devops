@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "$PATH" | tr ':' '\n' | grep -cve '^$'
+printf "%06d\n" $(echo "$PATH" | tr ':' '\n' | grep -cve '^$')
