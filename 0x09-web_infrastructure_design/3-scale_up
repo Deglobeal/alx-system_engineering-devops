@@ -1,0 +1,77 @@
+Scale-Up Distributed Web Infrastructure for www.foobar.com
+Architecture Components
+Server Type	Description
+2 Load Balancers	HAProxy servers configured in a cluster (Active-Active or Active-Passive) to ensure high availability
+2 Web Servers	Serve static content and act as reverse proxies
+2 Application Servers	Handle dynamic business logic
+1 Database Server	Dedicated MySQL primary-replica cluster (Primary + Replica)
+
+
+
+Diagram Description (Imagine a whiteboard layout):
+
+           Internet Users
+                 |
+         +----------------------+
+         |  Load Balancer 1 (HAProxy)  |
+         +----------------------+        
+                 |        
+         +----------------------+
+         |  Load Balancer 2 (HAProxy)  |  <-- Clustered with LB1 for HA
+         +----------------------+
+                /       \
+         +------------+  +-------------+
+         | Web Server |  | Web Server  |  <-- Serve static files and reverse proxy
+         +------------+  +-------------+
+              /               \
+     +----------------+  +----------------+
+     | App Server 1   |  | App Server 2   |  <-- Handle backend logic
+     +----------------+  +----------------+
+                \                /
+                 +-----------------+
+                 |  Database Server  |
+                 |  (MySQL Primary)  |
+                 +-----------------+
+                      |
+                 +-----------------+
+                 |  MySQL Replica   |
+                 +-----------------+
+
+
+Additional Element: 1 New Server + Load Balancer Cluster
+1. Additional Load Balancer Server
+Why added:
+To eliminate the single point of failure in the load balancing layer.
+
+Role:
+
+Load balancers are configured in a cluster (usually active-active or active-passive).
+
+If one fails, the other seamlessly takes over or shares load, ensuring high availability and fault tolerance.
+
+2. Dedicated Servers for Each Component
+Why split components:
+
+Separates concerns for better scalability, security, and performance.
+
+Web servers focus on serving static assets and reverse proxying.
+
+Application servers focus on running business logic and API processing.
+
+Database servers focus on data persistence.
+
+Benefits:
+
+Easier to scale individual layers (add more web or app servers independently).
+
+Limits blast radius for failures.
+
+Allows tailored security policies per server role.
+
+Application Server vs Web Server
+Aspect	Web Server (Nginx)	Application Server
+Main Responsibility	Serve static files, reverse proxy, caching	Execute dynamic business logic and backend processes
+Typical Technologies	Nginx, Apache	Django, Node.js, Flask, etc.
+Performance Focus	Fast static content delivery	Handling computations, DB interactions
+Location in Stack	Front-end of the server chain	Behind web server, serving API/dynamic responses
+Scaling	Scale horizontally for high traffic	Scale horizontally for business logic processing
