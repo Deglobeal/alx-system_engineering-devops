@@ -1,0 +1,62 @@
+📜 Infrastructure Design
+Here’s the setup:
+
+Components:
+
+1 server → physical or virtual machine with IP 8.8.8.8
+
+1 web server → Nginx (handles HTTP requests)
+
+1 application server → e.g., Gunicorn (for Python) or PHP-FPM (for PHP)
+
+Application files → the codebase for the site (HTML, CSS, JS, backend code)
+
+1 database → MySQL for persistent storage
+
+Domain name → foobar.com with a www record pointing to 8.8.8.8
+
+Flow of a request:
+
+User types www.foobar.com into their browser.
+
+DNS translates www.foobar.com to 8.8.8.8 (server IP).
+
+Browser sends an HTTP request to 8.8.8.8.
+
+Nginx (web server) receives the request.
+
+Nginx forwards it to the application server.
+
+Application server executes code from the application files, possibly querying the MySQL database.
+
+Application server returns the response to Nginx.
+
+Nginx sends the final HTML back to the user’s browser.
+
+🔍 Role of Each Component
+Server → The physical/virtual machine hosting all components.
+
+Domain name → Human-friendly address (foobar.com) that maps to the server’s IP.
+
+DNS record → The www in www.foobar.com is a CNAME or A record (A record maps directly to IP, CNAME maps to another name).
+
+Web server (Nginx) → Handles HTTP requests, serves static files, forwards dynamic requests to the application server.
+
+Application server → Runs backend code, processes business logic, interacts with the database.
+
+Database (MySQL) → Stores persistent application data.
+
+Communication protocol → HTTP or HTTPS over TCP/IP.
+
+⚠ Issues with This Setup
+SPOF (Single Point of Failure)
+
+If the one server goes down, the website becomes unreachable.
+
+Downtime during maintenance
+
+Deploying new code or restarting Nginx will cause temporary service interruption.
+
+Scaling limitations
+
+One server can only handle limited traffic before slowing down or crashing.
