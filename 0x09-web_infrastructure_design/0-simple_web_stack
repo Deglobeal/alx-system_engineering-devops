@@ -60,3 +60,36 @@ Deploying new code or restarting Nginx will cause temporary service interruption
 Scaling limitations
 
 One server can only handle limited traffic before slowing down or crashing.
+
++--------------------------+
+|       User's Browser     |
+| (requests www.foobar.com)|
++------------+-------------+
+             |
+             v
++------------+-------------+
+|      DNS Server          |  
+|  Resolves www.foobar.com |
+|     to IP 8.8.8.8        |
++------------+-------------+
+             |
+             v
++------------+-------------+
+|          Server          |  (IP: 8.8.8.8)
+|                          |
+|  +--------------------+  |
+|  |     Nginx (Web     |  | <--- Handles HTTP requests
+|  |      Server)       |  |
+|  +--------------------+  |
+|            |             |
+|            v             |
+|  +--------------------+  |
+|  | Application Server |  | <--- Runs app code, processes logic
+|  |   (e.g., Gunicorn) |  |
+|  +--------------------+  |
+|            |             |
+|            v             |
+|  +--------------------+  |
+|  |    MySQL Database  |  | <--- Stores persistent data
+|  +--------------------+  |
++--------------------------+

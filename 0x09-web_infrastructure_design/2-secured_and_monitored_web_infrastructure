@@ -1,0 +1,126 @@
+Secured & Monitored Three-Server Web Infrastructure for www.foobar.com
+Diagram Description (Imagine a whiteboard layout):
+
+                   Internet Users
+                         |
+                  +----------------+
+                  |   Firewall 1   |   <-- Firewall at network edge
+                  +----------------+
+                         |
+                  +----------------+
+                  | Load Balancer  |
+                  |  (HAProxy w/  |
+                  |  SSL Certificate)  <-- HTTPS termination
+                  +----------------+
+                         |
+                  +----------------+
+                  |   Firewall 2   |   <-- Firewall between LB & servers
+                  +----------------+
+                      /          \
+           +----------------+  +----------------+
+           | Web Server 1   |  | App Server 1   |
+           +----------------+  +----------------+
+                      \          /
+                  +----------------+
+                  |   Firewall 3   |   <-- Firewall protecting DB server
+                  +----------------+
+                         |
+                  +----------------+
+                  |  MySQL Primary |
+                  | (with Replica) |
+                  +----------------+
+
+Monitoring Clients on:
+- Load Balancer Server
+- Web Server 1
+- App Server 1
+(Collect and send logs/metrics to centralized monitoring service)
+
+
+
+New Components Added and Why
+1. Three Firewalls
+Why: Firewalls are security barriers that control and filter network traffic, preventing unauthorized access and attacks.
+
+Placement:
+
+Firewall 1: Between internet and load balancer — protects from external attacks.
+
+Firewall 2: Between load balancer and application/web servers — restricts traffic to allowed ports and IPs.
+
+Firewall 3: Between servers and database — isolates sensitive data layer, limits database access.
+
+2. SSL Certificate
+Why: To enable HTTPS, encrypting all communication between clients and servers.
+
+Purpose:
+
+Ensures data confidentiality and integrity.
+
+Protects user data from eavesdropping and man-in-the-middle attacks.
+
+Builds trust with users through the browser’s secure padlock.
+
+3. Monitoring Clients (Data Collectors)
+Why: For proactive observation and analysis of system health, performance, and security.
+
+What monitoring does:
+
+Collects logs, metrics (CPU, memory, network), and application data.
+
+Detects failures, bottlenecks, and unusual activity.
+
+Enables alerting for admins to respond quickly.
+
+How data is collected:
+
+Monitoring agents/clients run on each server.
+
+They gather system metrics and application logs.
+
+Data is sent to a central service like Sumologic, Prometheus, or Datadog for aggregation and visualization.
+
+Monitoring Web Server QPS (Queries Per Second)
+To monitor QPS:
+
+Enable access logging on Nginx (or your web server) with timestamped requests.
+
+Monitoring client parses access logs, counting requests per second.
+
+Alternatively, expose metrics endpoint with Prometheus exporters.
+
+Alerts can be configured if QPS exceeds or drops below thresholds.
+
+Infrastructure Issues & Explanations
+1. Terminating SSL at the Load Balancer:
+Problem:
+
+Traffic between load balancer and backend servers is unencrypted, vulnerable inside the network.
+
+Solution:
+
+Use end-to-end encryption: SSL termination at the load balancer and re-encryption to backend servers, or SSL passthrough if needed.
+
+2. Single MySQL Server Handling Writes:
+Problem:
+
+Single point of failure for writes; if primary DB server goes down, no writes can be processed.
+
+Impact: Application write operations halt, causing downtime.
+
+Solution:
+
+Implement MySQL Primary-Replica failover, or clustering technologies like Galera Cluster for multi-master writes.
+
+3. Servers Having All Components (DB, Web, App) on Same Machine:
+Problem:
+
+Lack of separation of concerns makes scaling and maintenance difficult.
+
+Security risks as database is exposed on the same server as public-facing apps.
+
+Resource contention between services can degrade performance.
+
+Solution:
+
+Separate servers for each layer: web, app, database for better isolation, security, and scalability.
